@@ -31,6 +31,7 @@ import azkaban.db.EncodingType;
 import azkaban.db.SQLTransaction;
 import azkaban.flow.Flow;
 import azkaban.project.JdbcProjectHandlerSet.FlowFileResultHandler;
+import azkaban.project.JdbcProjectHandlerSet.ProjectNameIdHandler;
 import azkaban.project.ProjectLogEvent.EventType;
 import azkaban.user.Permission;
 import azkaban.user.User;
@@ -1109,4 +1110,44 @@ public class JdbcProjectImpl implements ProjectLoader {
     }
     return projects;
   }
+
+  /**
+   * Returns name to id mapping of all the active projects from the DB.
+   */
+  @Override
+  public Map<String, Integer> fetchAllNames() throws ProjectManagerException {
+    final Map<String, Integer> result;
+    final ProjectNameIdHandler handler = new ProjectNameIdHandler();
+    final String query = "SELECT prj.id , prj.name from projects prj where prj.active = true;";
+    try {
+      result = this.dbOperator.query(query, handler);
+    } catch (final SQLException ex) {
+      logger.error(query + " failed.", ex);
+      throw new ProjectManagerException(
+          query + " failed.", ex);
+    }
+    return result;
+  }
+
+  /**
+   * Fetches given number of projects that are recently executed in the past one week.
+   */
+  @Override
+  public List<Project> fetchRecentProjects(final int initialNumOfProjects)
+      throws ProjectManagerException {
+    final ProjectResultHandler handler = new ProjectResultHandler();
+    List<Project> projects = Collections.emptyList();
+    final String query = ProjectResultHandler.SELECT_ALL_ACTIVE_PROJECTS + " and prj.id in (select "
+        + "project_id from execution_flows where start_time > ((UNIX_TIMESTAMP() - 7 * 86400)* "
+        + "1000)"
+        + "group by project_id order by count(*) desc ) limit " + initialNumOfProjects;
+    try {
+      projects = this.dbOperator.query(query, handler);
+    } catch (final SQLException ex) {
+      logger.info("No recent projects found to be load in cache.");
+      throw new ProjectManagerException("Error retrieving all active projects. ", ex);
+    }
+    return projects;
+  }
+
 }

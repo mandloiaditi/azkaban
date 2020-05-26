@@ -341,6 +341,10 @@ public class Constants {
         "execution.logs.cleanup.interval.seconds";
     public static final String EXECUTION_LOGS_CLEANUP_RECORD_LIMIT =
         "execution.logs.cleanup.record.limit";
+    public static final String AZKABAN_PROJECT_CACHE_TYPE = "azkaban.webserver.projectcache.type";
+    public static final String INIT_NUM_PROJECTS = "azkaban.webserver.projectcache.init"
+        + ".size";
+    public static final String MAX_PROJECTS_CACHE = "azkaban.webserver.projectcache.max.size";
   }
 
   public static class FlowProperties {
