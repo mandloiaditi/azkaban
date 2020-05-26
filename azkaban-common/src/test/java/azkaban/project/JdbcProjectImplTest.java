@@ -539,4 +539,16 @@ public class JdbcProjectImplTest {
     Assert.assertEquals(project1.getDescription(), project2.get(0).getDescription());
     Assert.assertEquals(project1.getLastModifiedUser(), project2.get(0).getLastModifiedUser());
   }
+
+  @Test
+  public void testFetchAllNames() throws Exception {
+    createThreeProjects();
+    final Map<String, Integer> nameToId = this.loader.fetchAllNames();
+    Assert.assertNotNull(nameToId);
+    for (final String name : nameToId.keySet()) {
+      final Project project = this.loader.fetchProjectByName(name);
+      final Integer id = project.getId();
+      Assert.assertEquals(nameToId.get(name), id);
+    }
+  }
 }

@@ -236,4 +236,15 @@ public interface ProjectLoader {
    */
   List<Project> fetchProjectById(List<Integer> ids) throws ProjectManagerException;
 
+  /**
+   * @return names and ids for active projects from projects table
+   * @throws ProjectManagerException
+   */
+  Map<String, Integer> fetchAllNames() throws ProjectManagerException;
+
+  /**
+   * @return list of recently executed projects for pre-loading project cache
+   * @throws ProjectManagerException
+   */
+  List<Project> fetchRecentProjects(int initialNumOfProjects) throws ProjectManagerException;
 }

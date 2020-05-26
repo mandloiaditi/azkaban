@@ -85,9 +85,6 @@ public abstract class AbstractProjectCache implements ProjectCache {
 
   /**
    * Returns project object for given name using methods of the private projectLoader.
-   *
-   * @param key
-   * @throws ProjectManagerException
    */
   protected Project fetchProjectByName(final String key) throws ProjectManagerException {
     final Project result = this.projectLoader.fetchProjectByName(key);
@@ -96,12 +93,33 @@ public abstract class AbstractProjectCache implements ProjectCache {
 
   /**
    * Returns project object for given id using methods of the private projectLoader.
-   *
-   * @param id
-   * @throws ProjectManagerException
    */
   protected Project fetchProjectById(final Integer id) throws ProjectManagerException {
     final Project result = this.projectLoader.fetchProjectById(id);
     return result;
+  }
+
+  /**
+   * Returns recently executed projects methods of the private projectLoader.
+   *
+   * @param = number of projects to be fetched.
+   */
+  protected List<Project> fetchRecentProjects(final int initialNumOfProjects)
+      throws ProjectManagerException {
+    return this.projectLoader.fetchRecentProjects(initialNumOfProjects);
+  }
+
+  /**
+   * Returns name to id mapping for all the active projects.
+   */
+  protected Map<String, Integer> fetchAllNames() throws ProjectManagerException {
+    return this.projectLoader.fetchAllNames();
+  }
+
+  /**
+   * Returns all the projects that match to any of the given ids by querying the database.
+   */
+  protected List<Project> fetchProjectById(final List<Integer> ids) throws ProjectManagerException {
+    return this.projectLoader.fetchProjectById(ids);
   }
 }
