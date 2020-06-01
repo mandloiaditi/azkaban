@@ -3,7 +3,9 @@ package azkaban.project;
 import azkaban.utils.CaseInsensitiveConcurrentHashMap;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
+import javax.inject.Singleton;
 
+@Singleton
 public class ProjectCacheInMem implements ProjectCache {
 
   private final ConcurrentHashMap<Integer, Project> projectsById;
