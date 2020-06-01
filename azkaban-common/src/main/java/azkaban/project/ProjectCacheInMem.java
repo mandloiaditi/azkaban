@@ -6,10 +6,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ProjectCacheInMem implements ProjectCache {
 
-  private final ConcurrentHashMap<Integer, Project> projectsById =
-      new ConcurrentHashMap<>();
-  private final CaseInsensitiveConcurrentHashMap<Project> projectsByName =
-      new CaseInsensitiveConcurrentHashMap<>();
+  private final ConcurrentHashMap<Integer, Project> projectsById;
+
+  private final CaseInsensitiveConcurrentHashMap<Project> projectsByName;
+
+  public ProjectCacheInMem() {
+    this.projectsById = new ConcurrentHashMap<>();
+    this.projectsByName = new CaseInsensitiveConcurrentHashMap<>();
+  }
 
   @Override
   public void putProject(final Project project) {
