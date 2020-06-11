@@ -28,6 +28,7 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class CommonMetrics {
+
   public static final String FLOW_FAIL_METER_NAME = "flow-fail-meter";
   public static final String DISPATCH_FAIL_METER_NAME = "dispatch-fail-meter";
   public static final String DISPATCH_SUCCESS_METER_NAME = "dispatch-success-meter";
@@ -39,6 +40,7 @@ public class CommonMetrics {
   public static final String OOM_WAITING_JOB_COUNT_NAME = "OOM-waiting-job-count";
   public static final String UPLOAD_FAT_PROJECT_METER_NAME = "upload-fat-project-meter";
   public static final String UPLOAD_THIN_PROJECT_METER_NAME = "upload-thin-project-meter";
+  public static final String PROJECT_CACHE_METER_NAME = "project-cache-meter";
 
   private Counter OOMWaitingJobCount;
   private final MetricsManager metricsManager;
@@ -52,6 +54,7 @@ public class CommonMetrics {
   private Meter submitFlowSkipMeter;
   private Meter uploadFatProjectMeter;
   private Meter uploadThinProjectMeter;
+  private Meter projectCacheMeter;
 
   @Inject
   public CommonMetrics(final MetricsManager metricsManager) {
@@ -71,6 +74,7 @@ public class CommonMetrics {
     this.OOMWaitingJobCount = this.metricsManager.addCounter(OOM_WAITING_JOB_COUNT_NAME);
     this.uploadFatProjectMeter = this.metricsManager.addMeter(UPLOAD_FAT_PROJECT_METER_NAME);
     this.uploadThinProjectMeter = this.metricsManager.addMeter(UPLOAD_THIN_PROJECT_METER_NAME);
+    this.projectCacheMeter = this.metricsManager.addMeter(PROJECT_CACHE_METER_NAME);
   }
 
   /**
@@ -133,12 +137,16 @@ public class CommonMetrics {
   /**
    * Mark uploadFatProjectMeter when a fat project zip is uploaded to the web server.
    */
-  public void markUploadFatProject() { this.uploadFatProjectMeter.mark(); }
+  public void markUploadFatProject() {
+    this.uploadFatProjectMeter.mark();
+  }
 
   /**
    * Mark uploadThinProjectMeter when a thin project zip is uploaded to the web server.
    */
-  public void markUploadThinProject() { this.uploadThinProjectMeter.mark(); }
+  public void markUploadThinProject() {
+    this.uploadThinProjectMeter.mark();
+  }
 
   /**
    * Mark the occurrence of a job waiting event due to OOM
@@ -152,5 +160,13 @@ public class CommonMetrics {
    */
   public void decrementOOMJobWaitCount() {
     this.OOMWaitingJobCount.dec();
+  }
+
+  /**
+   * update the project cache meter on  a cache miss
+   */
+
+  public void markProjectCacheMiss() {
+    this.projectCacheMeter.mark();
   }
 }
