@@ -59,7 +59,7 @@ public class ProjectManagerTest {
     this.archiveUnthinner = mock(ArchiveUnthinner.class);
     this.validatorUtils = mock(ValidatorUtils.class);
     this.commonMetrics = mock(CommonMetrics.class);
-    this.cache = new ProjectCacheInMem(this.projectLoader);
+    this.cache = new InMemoryProjectCache(this.projectLoader);
     this.azkabanProjectLoader = new AzkabanProjectLoader(this.props, this.commonMetrics,
         this.projectLoader,
         this.projectStorageManager, mock(FlowLoaderFactory.class), this.executorLoader,

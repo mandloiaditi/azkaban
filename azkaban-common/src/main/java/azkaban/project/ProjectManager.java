@@ -126,36 +126,15 @@ public class ProjectManager {
 
   public List<Project> getUserProjectsByRegex(final User user, final String regexPattern) {
     final List<Project> array = new ArrayList<>();
-    final Pattern pattern;
-    try {
-      pattern = Pattern.compile(regexPattern, Pattern.CASE_INSENSITIVE);
-    } catch (final PatternSyntaxException e) {
-      logger.error("Bad regex pattern {}", regexPattern);
-      return array;
-    }
-    final List<Integer> ids = new ArrayList<>();
-    final List<String> names = this.cache.getAllProjectNames();
-    for (final String projName : names) {
-      if (pattern.matcher(projName).find()) {
-        ids.add(this.cache.getProjectId(projName));
-      }
-    }
-    List<Project> matches = null;
-    try {
-      matches = this.projectLoader.fetchProjectById(ids);
-    } catch (final ProjectManagerException e) {
-      logger.info("No matching project found");
-    }
-    if (matches == null) {
-      return null;
-    }
-    for (final Project project : matches) {
-      final Permission perm = project.getUserPermission(user);
+    final List<Project> matches = getProjectsByRegex(regexPattern);
 
-      if (perm != null
-          && (perm.isPermissionSet(Type.ADMIN) || perm
-          .isPermissionSet(Type.READ))) {
-        if (pattern.matcher(project.getName()).find()) {
+    if (matches != null) {
+      for (final Project project : matches) {
+        final Permission perm = project.getUserPermission(user);
+
+        if (perm != null
+            && (perm.isPermissionSet(Type.ADMIN) || perm
+            .isPermissionSet(Type.READ))) {
           array.add(project);
         }
       }
@@ -168,13 +147,12 @@ public class ProjectManager {
   }
 
   public List<Project> getProjectsByRegex(final String regexPattern) {
-    final List<Project> allProjects = new ArrayList<>();
     final Pattern pattern;
     try {
       pattern = Pattern.compile(regexPattern, Pattern.CASE_INSENSITIVE);
     } catch (final PatternSyntaxException e) {
       logger.error("Bad regex pattern {}", regexPattern);
-      return allProjects;
+      return null;
     }
     final List<Integer> ids = new ArrayList<>();
     final List<String> names = this.cache.getAllProjectNames();
@@ -189,13 +167,9 @@ public class ProjectManager {
     } catch (final ProjectManagerException e) {
       logger.info("No matching project found");
     }
-    if (matches != null) {
-      for (final Project project : matches) {
-        allProjects.add(project);
-      }
-    }
-    return allProjects;
+    return matches;
   }
+
 
   /**
    * Checks if a project is active using project_id

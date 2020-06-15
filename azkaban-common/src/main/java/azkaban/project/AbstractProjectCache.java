@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract Class implementing common methods for Project Cache Implementation
@@ -13,6 +15,8 @@ import java.util.Map;
 public abstract class AbstractProjectCache implements ProjectCache {
 
   private final ProjectLoader loader;
+
+  private static final Logger logger = LoggerFactory.getLogger(AbstractProjectCache.class);
 
   public AbstractProjectCache(final ProjectLoader loader) {
     this.loader = loader;
@@ -41,6 +45,7 @@ public abstract class AbstractProjectCache implements ProjectCache {
         project.setFlows(flowMap);
       }
     } catch (final ProjectManagerException e) {
+      logger.error("Could not load projects flows from store.", e);
       throw new RuntimeException("Could not load projects flows from store.", e);
     }
   }
@@ -56,6 +61,7 @@ public abstract class AbstractProjectCache implements ProjectCache {
     try {
       result = this.loader.fetchAllActiveProjects();
     } catch (final ProjectManagerException e) {
+      logger.error("Could not load projects flows from store.", e);
       throw new RuntimeException("Could not load projects from store.", e);
     }
     return result;

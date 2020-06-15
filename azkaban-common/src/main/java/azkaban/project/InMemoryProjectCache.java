@@ -14,9 +14,9 @@ import org.slf4j.LoggerFactory;
  * when the web-server starts. This would be replaced in future by guava cache implementation.
  */
 @Singleton
-public class ProjectCacheInMem extends AbstractProjectCache implements ProjectCache {
+public class InMemoryProjectCache extends AbstractProjectCache implements ProjectCache {
 
-  private static final Logger logger = LoggerFactory.getLogger(ProjectCacheInMem.class);
+  private static final Logger logger = LoggerFactory.getLogger(InMemoryProjectCache.class);
 
   private final ConcurrentHashMap<Integer, Project> projectsById;
 
@@ -25,7 +25,7 @@ public class ProjectCacheInMem extends AbstractProjectCache implements ProjectCa
   private final ProjectLoader projectLoader;
 
   @Inject
-  public ProjectCacheInMem(final ProjectLoader loader) {
+  public InMemoryProjectCache(final ProjectLoader loader) {
     super(loader);
     this.projectLoader = loader;
     this.projectsById = new ConcurrentHashMap<>();
