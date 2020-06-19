@@ -116,7 +116,7 @@ public class JdbcProjectImpl implements ProjectLoader {
     ids.add(id);
     try {
       final List<Project> projects = fetchProjectById(ids);
-      if (projects.isEmpty()) {
+      if (projects == null || projects.isEmpty()) {
         throw new ProjectManagerException("No project with id " + id + " exists in db.");
       }
       project = projects.get(0);
@@ -1097,7 +1097,7 @@ public class JdbcProjectImpl implements ProjectLoader {
         + "prm.name, prm.permissions, prm.isGroup "
         + "FROM projects prj "
         + "LEFT JOIN project_permissions prm ON prj.id = prm.project_id WHERE prj.id in (" + name
-        + ") and prj.active = true; ";
+        + ")";
     try {
       projects = this.dbOperator
           .query(SELECT_ACTIVE_PROJECT_BY_IDS, handler);
