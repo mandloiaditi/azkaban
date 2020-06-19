@@ -1,6 +1,8 @@
 package azkaban.project;
 
 import azkaban.utils.CaseInsensitiveConcurrentHashMap;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.inject.Inject;
@@ -77,14 +79,12 @@ public class InMemoryProjectCache extends AbstractProjectCache implements Projec
   public Project getProjectByName(final String key) {
     Project project = this.projectsByName.get(key);
     if (project == null) {
-      logger.info("No active project with name {} exists in cache or DB.", key);
+      logger.info("No active project with name {} exists in cache, fetching from DB.", key);
       try {
         project = this.projectLoader.fetchProjectByName(key);
       } catch (final ProjectManagerException e) {
         logger.error("Could not load project from store.", e);
       }
-    } else {
-      logger.info("Project {} not found in cache, fetched from DB.", key);
     }
     return project;
   }
@@ -131,6 +131,14 @@ public class InMemoryProjectCache extends AbstractProjectCache implements Projec
   @Override
   public Integer getProjectId(final String name) {
     return this.projectsByName.get(name).getId();
+  }
+
+  /**
+   * returns all the projects from the in-memory cache
+   */
+  @Override
+  public Collection<Project> getAllProjects() {
+    return new ArrayList<>(this.projectsById.values());
   }
 
 }

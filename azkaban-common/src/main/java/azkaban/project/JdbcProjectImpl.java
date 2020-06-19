@@ -48,6 +48,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -110,22 +111,18 @@ public class JdbcProjectImpl implements ProjectLoader {
 
   @Override
   public Project fetchProjectById(final int id) throws ProjectManagerException {
-
     Project project = null;
-    final ProjectResultHandler handler = new ProjectResultHandler();
-
+    final ArrayList<Integer> ids = new ArrayList<>();
+    ids.add(id);
     try {
-      final List<Project> projects = this.dbOperator
-          .query(ProjectResultHandler.SELECT_PROJECT_BY_ID, handler, id);
+      final List<Project> projects = fetchProjectById(ids);
       if (projects.isEmpty()) {
         throw new ProjectManagerException("No project with id " + id + " exists in db.");
       }
       project = projects.get(0);
-    } catch (final SQLException ex) {
-      logger.error(ProjectResultHandler.SELECT_PROJECT_BY_ID + " failed.", ex);
+    } catch (final ProjectManagerException ex) {
       throw new ProjectManagerException("Query for existing project failed. Project " + id, ex);
     }
-
     return project;
   }
 
