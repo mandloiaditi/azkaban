@@ -36,9 +36,7 @@ public interface ProjectCache {
   void removeProject(Project project);
 
   /**
-   * Queries DB to get all active projects present.
-   *
-   * @return list of all active projects;
+   * returns list of all active projects;
    */
   public Collection<Project> getAllProjects();
 
