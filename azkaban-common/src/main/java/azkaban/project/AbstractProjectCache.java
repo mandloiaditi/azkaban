@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class AbstractProjectCache implements ProjectCache {
 
-  protected final ProjectLoader projectLoader;
+  private final ProjectLoader projectLoader;
 
   private static final Logger logger = LoggerFactory.getLogger(AbstractProjectCache.class);
 
