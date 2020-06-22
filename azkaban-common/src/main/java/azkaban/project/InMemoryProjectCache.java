@@ -61,20 +61,15 @@ public class InMemoryProjectCache extends AbstractProjectCache implements Projec
    * returns a high level project object. Need to explicitly load flows for the project objects.
    */
   private void init() {
-
-    final List<Project> projects;
+    final List<Project> projects = super.getActiveProjects();
     logger.info("Loading active projects.");
-    try {
-      projects = super.getActiveProjects();
-    } catch (final ProjectManagerException e) {
-      throw new RuntimeException("Could not load projects from store.", e);
+    if (projects != null) {
+      for (final Project proj : projects) {
+        putProject(proj);
+      }
+      logger.info("Loading flows from active projects.");
+      loadAllFlows(projects);
     }
-    for (final Project proj : projects) {
-      putProject(proj);
-    }
-    logger.info("Loading flows from active projects.");
-
-    loadAllFlows(projects);
   }
 
   /**
