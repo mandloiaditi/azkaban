@@ -63,13 +63,14 @@ public class InMemoryProjectCache extends AbstractProjectCache implements Projec
   private void init() {
     final List<Project> projects = super.getActiveProjects();
     logger.info("Loading active projects.");
-    if (projects != null) {
+    if (projects != null && !projects.isEmpty()) {
       for (final Project proj : projects) {
         putProject(proj);
       }
       logger.info("Loading flows from active projects.");
       loadAllFlows(projects);
     }
+
   }
 
   /**

@@ -17,6 +17,7 @@
 package azkaban.project;
 
 import azkaban.flow.Flow;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +73,7 @@ public abstract class AbstractProjectCache implements ProjectCache {
    */
   @Override
   public List<Project> getActiveProjects() {
-    final List<Project> result;
+    List<Project> result = Collections.emptyList();
     try {
       result = this.projectLoader.fetchAllActiveProjects();
     } catch (final ProjectManagerException e) {
