@@ -13,6 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package azkaban.project;
 
 import static azkaban.project.JdbcProjectHandlerSet.IntHandler;
@@ -48,9 +49,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,8 +113,7 @@ public class JdbcProjectImpl implements ProjectLoader {
   @Override
   public Project fetchProjectById(final int id) throws ProjectManagerException {
     Project project = null;
-    final ArrayList<Integer> ids = new ArrayList<>();
-    ids.add(id);
+    final List<Integer> ids = Collections.singletonList(id);
     try {
       final List<Project> projects = fetchProjectById(ids);
       if (projects == null || projects.isEmpty()) {
@@ -1079,7 +1079,8 @@ public class JdbcProjectImpl implements ProjectLoader {
   }
 
   /**
-   * List of Projects with ids that match with any id specified in the list
+   * Returns list of Projects with ids that match with any id specified in the list of ids passed as
+   * a parameter.
    *
    * @param ids List of ids of projects to be queried
    * @throws ProjectManagerException
@@ -1087,12 +1088,12 @@ public class JdbcProjectImpl implements ProjectLoader {
   @Override
   public List<Project> fetchProjectById(final List<Integer> ids) throws ProjectManagerException {
     if (ids.size() == 0) {
-      throw new ProjectManagerException("No matching ids to query");
+      throw new ProjectManagerException("No input to query");
     }
     final ProjectResultHandler handler = new ProjectResultHandler();
-    final List<Project> projects;
+    List<Project> projects = Collections.emptyList();
     final String name = StringUtils.join(ids, ',').toString();
-    final String SELECT_ACTIVE_PROJECT_BY_IDS = "SELECT "
+    final String SELECT_PROJECT_BY_IDS = "SELECT "
         + "prj.id, prj.name, prj.active, prj.modified_time, prj.create_time, prj.version, prj.last_modified_by, prj.description, prj.enc_type, prj.settings_blob, "
         + "prm.name, prm.permissions, prm.isGroup "
         + "FROM projects prj "
@@ -1100,14 +1101,11 @@ public class JdbcProjectImpl implements ProjectLoader {
         + ")";
     try {
       projects = this.dbOperator
-          .query(SELECT_ACTIVE_PROJECT_BY_IDS, handler);
-      if (projects.isEmpty()) {
-        return null;
-      }
+          .query(SELECT_PROJECT_BY_IDS, handler);
     } catch (final SQLException ex) {
-      logger.error(SELECT_ACTIVE_PROJECT_BY_IDS + " failed.", ex);
+      logger.error(SELECT_PROJECT_BY_IDS + " failed.", ex);
       throw new ProjectManagerException(
-          SELECT_ACTIVE_PROJECT_BY_IDS + " failed.", ex);
+          SELECT_PROJECT_BY_IDS + " failed.", ex);
     }
     return projects;
   }

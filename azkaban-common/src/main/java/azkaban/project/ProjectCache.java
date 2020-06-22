@@ -1,6 +1,21 @@
+/*
+ * Copyright 2020 LinkedIn Corp.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package azkaban.project;
 
-import java.util.Collection;
 import java.util.List;
 
 public interface ProjectCache {
@@ -38,7 +53,7 @@ public interface ProjectCache {
   /**
    * returns list of all active projects;
    */
-  public Collection<Project> getAllProjects();
+  List<Project> getActiveProjects();
 
   /**
    * @return list of names of all active projects
@@ -49,4 +64,10 @@ public interface ProjectCache {
    * returns id corresponding to name;
    */
   Integer getProjectId(String name);
+
+  /**
+   * Returns given ids from the DB and loads them into the cache. It is likely that places where
+   * this function is called, the same projects will be accessed again thus the loading of cache.
+   */
+  List<Project> fetchProjectForIds(List<Integer> ids);
 }

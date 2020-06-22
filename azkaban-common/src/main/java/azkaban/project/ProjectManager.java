@@ -128,7 +128,7 @@ public class ProjectManager {
     final List<Project> array = new ArrayList<>();
     final List<Project> matches = getProjectsByRegex(regexPattern);
 
-    if (matches != null) {
+    if (matches != null && !matches.isEmpty()) {
       for (final Project project : matches) {
         final Permission perm = project.getUserPermission(user);
 
@@ -143,16 +143,21 @@ public class ProjectManager {
   }
 
   public List<Project> getProjects() {
-    return new ArrayList<>(this.cache.getAllProjects());
+    return new ArrayList<>(this.cache.getActiveProjects());
   }
 
+  /**
+   * This function matches the regex pattern with the names of all active projects, gets
+   * corresponding ids and fetches the corresponding projects from the cache( cases : all projects
+   * are present in cache / cache queries from DB and is updated).
+   */
   public List<Project> getProjectsByRegex(final String regexPattern) {
     final Pattern pattern;
     try {
       pattern = Pattern.compile(regexPattern, Pattern.CASE_INSENSITIVE);
     } catch (final PatternSyntaxException e) {
       logger.error("Bad regex pattern {}", regexPattern);
-      return null;
+      return Collections.emptyList();
     }
     final List<Integer> ids = new ArrayList<>();
     final List<String> names = this.cache.getAllProjectNames();
@@ -161,9 +166,9 @@ public class ProjectManager {
         ids.add(this.cache.getProjectId(projName));
       }
     }
-    List<Project> matches = null;
+    List<Project> matches = Collections.emptyList();
     try {
-      matches = this.projectLoader.fetchProjectById(ids);
+      matches = this.cache.fetchProjectForIds(ids);
     } catch (final ProjectManagerException e) {
       logger.info("No matching project found");
     }
@@ -172,7 +177,10 @@ public class ProjectManager {
 
 
   /**
-   * Checks if a project is active using project_id
+   * Checks if a project is active using project_id. getProject(id) can also fetch he inactive
+   * projects from DB. Thus we need to make sure project retrieved is present in the mapping which
+   * consists of all the active projects. This map has key as project name in all the project cache
+   * implementations.
    */
   public Boolean isActiveProject(final int id) {
     Project project = getProject(id);
@@ -184,7 +192,7 @@ public class ProjectManager {
   }
 
   /**
-   * fetch active project by project name. Queries the cache first then db if not found
+   * Fetch active project by project name. Queries the cache first then DB.
    */
   public Project getProject(final String name) {
     final Project fetchedProject = this.cache.getProjectByName(name);
@@ -192,7 +200,8 @@ public class ProjectManager {
   }
 
   /**
-   * fetch active project from cache and inactive projects from db by project_id
+   * Fetch active/inactive project by project id. If active project not present in cache, fetches
+   * from DB. Fetches inactive project from DB.
    */
   public Project getProject(final int id) {
     final Project fetchedProject = this.cache.getProjectById(id);
