@@ -53,9 +53,9 @@ public class ProjectCacheGuavaTest {
         .thenReturn(Collections.emptyList());
     this.props.put(ConfigurationKeys.INIT_NUM_PROJECTS, 0);
     this.cacheGuava = new ProjectCacheGuava(this.props, this.projectLoader, this.commonMetrics);
-    assert (!this.cacheGuava.getProjectById(2).isPresent());
+    assertNull(this.cacheGuava.getProjectById(2).orElse(null));
     when(this.projectLoader.fetchProjectById(2)).thenReturn(new Project(2, "myTest2"));
-    assert (this.cacheGuava.getProjectById(2).isPresent());
+    assertNotNull(this.cacheGuava.getProjectById(2).orElse(null));
   }
 
   @Test
@@ -70,7 +70,7 @@ public class ProjectCacheGuavaTest {
     this.cacheGuava.putProject(test2);
 
     Optional<Project> ret = this.cacheGuava.getProjectById(1);
-    assert (ret.isPresent());
+    assertNotNull(ret.orElse(null));
     assertEquals(ret.get().getName(), test1.getName());
     assertEquals(ret.get().getDescription(), test1.getDescription());
 
@@ -83,9 +83,9 @@ public class ProjectCacheGuavaTest {
     this.cacheGuava.removeProject(test1);
 
     ret = this.cacheGuava.getProjectById(test1.getId());
-    assertNull(ret);
+    assertNull(ret.orElse(null));
     ret = this.cacheGuava.getProjectByName(test1.getName());
-    assertNull(ret);
+    assertNull(ret.orElse(null));
   }
 
   @Test
@@ -112,9 +112,9 @@ public class ProjectCacheGuavaTest {
     this.cacheGuava.getProjectById(3);
     this.cacheGuava.putProject(new Project(4, "myProjectTest4"));
     assertNull(this.cacheGuava.getProjectById(2).orElse(null));
-    assertNotNull(this.cacheGuava.getProjectById(3));
-    assertNotNull(this.cacheGuava.getProjectById(1));
-    assertNotNull(this.cacheGuava.getProjectById(4));
+    assertNotNull(this.cacheGuava.getProjectById(3).orElse(null));
+    assertNotNull(this.cacheGuava.getProjectById(1).orElse(null));
+    assertNotNull(this.cacheGuava.getProjectById(4).orElse(null));
   }
 
 }
