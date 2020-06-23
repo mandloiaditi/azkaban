@@ -127,16 +127,13 @@ public class ProjectManager {
   public List<Project> getUserProjectsByRegex(final User user, final String regexPattern) {
     final List<Project> array = new ArrayList<>();
     final List<Project> matches = getProjectsByRegex(regexPattern);
+    for (final Project project : matches) {
+      final Permission perm = project.getUserPermission(user);
 
-    if (matches != null && !matches.isEmpty()) {
-      for (final Project project : matches) {
-        final Permission perm = project.getUserPermission(user);
-
-        if (perm != null
-            && (perm.isPermissionSet(Type.ADMIN) || perm
-            .isPermissionSet(Type.READ))) {
-          array.add(project);
-        }
+      if (perm != null
+          && (perm.isPermissionSet(Type.ADMIN) || perm
+          .isPermissionSet(Type.READ))) {
+        array.add(project);
       }
     }
     return array;
