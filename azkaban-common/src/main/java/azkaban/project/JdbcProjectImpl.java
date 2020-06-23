@@ -1147,6 +1147,9 @@ public class JdbcProjectImpl implements ProjectLoader {
       logger.info("No recent projects found to be load in cache.");
       throw new ProjectManagerException("Error retrieving all active projects. ", ex);
     }
+    if (projects == null) {
+      return Collections.emptyList();
+    }
     return projects;
   }
 
