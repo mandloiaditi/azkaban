@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.slf4j.Logger;
@@ -130,39 +131,19 @@ public class InMemoryProjectCache extends AbstractProjectCache implements Projec
   }
 
   /**
-   * Returns names for all the active projects.;
+   * @param pattern
+   * @return List of Projects matching to given pattern.
    */
   @Override
-  public List<String> getAllProjectNames() {
-    return this.projectsByName.getKeys();
-  }
-
-  /**
-   * Returns id by querying the project name map.
-   */
-  @Override
-  public Integer getProjectId(final String name) {
-    return this.projectsByName.get(name).getId();
-  }
-
-  /**
-   * Returns the projects corresponding to given list of ids from DB. We do not need to update
-   * in-memory cache as it already has all of these projects with itself.
-   */
-
-  @Override
-  public List<Project> fetchProjectForIds(final List<Integer> ids) {
-    final ArrayList<Project> result = new ArrayList<>();
-    for (final Integer id : ids) {
-      try {
-        if (getProjectById(id).isPresent()) {
-          result.add(getProjectById(id).get());
-        }
-      } catch (final ProjectManagerException e) {
-        logger.info("Could not load project from store for the id :", id);
+  public List<Project> getProjectsWihSimilarNames(final Pattern pattern) {
+    final List<Project> matches = new ArrayList<>();
+    final ArrayList<String> names = new ArrayList<>(this.projectsByName.getKeys());
+    for (final String projName : names) {
+      if (pattern.matcher(projName).find()) {
+        matches.add(this.projectsByName.get(projName));
       }
     }
-    return result;
+    return matches;
   }
 
   /**
@@ -172,5 +153,6 @@ public class InMemoryProjectCache extends AbstractProjectCache implements Projec
   public List<Project> getActiveProjects() {
     return new ArrayList<>(this.projectsById.values());
   }
+
 
 }

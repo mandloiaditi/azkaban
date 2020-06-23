@@ -156,15 +156,7 @@ public class ProjectManager {
       logger.error("Bad regex pattern {}", regexPattern);
       return Collections.emptyList();
     }
-    final List<Integer> ids = new ArrayList<>();
-    final List<String> names = this.cache.getAllProjectNames();
-    for (final String projName : names) {
-      if (pattern.matcher(projName).find()) {
-        ids.add(this.cache.getProjectId(projName));
-      }
-    }
-    final List<Project> matches = this.cache.fetchProjectForIds(ids);
-    return matches;
+    return this.cache.getProjectsWihSimilarNames(pattern);
   }
 
 

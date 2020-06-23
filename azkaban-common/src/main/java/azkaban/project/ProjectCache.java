@@ -18,6 +18,7 @@ package azkaban.project;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 public interface ProjectCache {
 
@@ -57,18 +58,7 @@ public interface ProjectCache {
   List<Project> getActiveProjects();
 
   /**
-   * @return list of names of all active projects
+   * Returns matching project names to given regex pattern.
    */
-  List<String> getAllProjectNames();
-
-  /**
-   * returns id corresponding to name;
-   */
-  Integer getProjectId(String name);
-
-  /**
-   * Returns given ids from the DB and loads them into the cache. It is likely that places where
-   * this function is called, the same projects will be accessed again thus the loading of cache.
-   */
-  List<Project> fetchProjectForIds(List<Integer> ids);
+  List<Project> getProjectsWihSimilarNames(Pattern pattern);
 }
