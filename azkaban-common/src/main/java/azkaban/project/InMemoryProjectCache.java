@@ -19,6 +19,7 @@ package azkaban.project;
 import azkaban.utils.CaseInsensitiveConcurrentHashMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -63,13 +64,11 @@ public class InMemoryProjectCache extends AbstractProjectCache implements Projec
   private void init() {
     final List<Project> projects = super.getActiveProjects();
     logger.info("Loading active projects.");
-    if (projects != null && !projects.isEmpty()) {
-      for (final Project proj : projects) {
-        putProject(proj);
-      }
-      logger.info("Loading flows from active projects.");
-      loadAllFlows(projects);
+    for (final Project proj : projects) {
+      putProject(proj);
     }
+    logger.info("Loading flows from active projects.");
+    loadAllFlows(projects);
 
   }
 
@@ -91,7 +90,7 @@ public class InMemoryProjectCache extends AbstractProjectCache implements Projec
    * @return Project
    */
   @Override
-  public Project getProjectByName(final String key) {
+  public Optional<Project> getProjectByName(final String key) {
     Project project = this.projectsByName.get(key);
     if (project == null) {
       logger.info("No active project with name {} exists in cache, fetching from DB.", key);
@@ -101,7 +100,7 @@ public class InMemoryProjectCache extends AbstractProjectCache implements Projec
         logger.error("Could not load project from store.", e);
       }
     }
-    return project;
+    return Optional.ofNullable(project);
   }
 
   /**
@@ -112,16 +111,13 @@ public class InMemoryProjectCache extends AbstractProjectCache implements Projec
    * @return Project
    */
   @Override
-  public Project getProjectById(final Integer key) {
+  public Optional<Project> getProjectById(final Integer key) throws ProjectManagerException {
     Project project = this.projectsById.get(key);
     if (project == null) {
-      try {
-        project = fetchProjectById(key);
-      } catch (final ProjectManagerException e) {
-        logger.error("Could not load project from store.", e);
-      }
+      logger.error("Project not found in cache, fetching from DB");
+      project = fetchProjectById(key);
     }
-    return project;
+    return Optional.ofNullable(project);
   }
 
   /**
@@ -155,15 +151,16 @@ public class InMemoryProjectCache extends AbstractProjectCache implements Projec
    */
 
   @Override
-  public List<Project> fetchProjectForIds(final List<Integer> ids) throws ProjectManagerException {
+  public List<Project> fetchProjectForIds(final List<Integer> ids) {
     final ArrayList<Project> result = new ArrayList<>();
-    if (!ids.isEmpty()) {
-      for (final Integer id : ids) {
-        result.add(getProjectById(id));
+    for (final Integer id : ids) {
+      try {
+        if (getProjectById(id).isPresent()) {
+          result.add(getProjectById(id).get());
+        }
+      } catch (final ProjectManagerException e) {
+        logger.info("Could not load project from store for the id :", id);
       }
-    }
-    if (result.isEmpty()) {
-      throw new ProjectManagerException("No projects found for given ids");
     }
     return result;
   }

@@ -166,12 +166,7 @@ public class ProjectManager {
         ids.add(this.cache.getProjectId(projName));
       }
     }
-    List<Project> matches = Collections.emptyList();
-    try {
-      matches = this.cache.fetchProjectForIds(ids);
-    } catch (final ProjectManagerException e) {
-      logger.info("No matching project found");
-    }
+    final List<Project> matches = this.cache.fetchProjectForIds(ids);
     return matches;
   }
 
@@ -195,7 +190,7 @@ public class ProjectManager {
    * Fetch active project by project name. Queries the cache first then DB.
    */
   public Project getProject(final String name) {
-    final Project fetchedProject = this.cache.getProjectByName(name);
+    final Project fetchedProject = this.cache.getProjectByName(name).orElse(null);
     return fetchedProject;
   }
 
@@ -204,7 +199,12 @@ public class ProjectManager {
    * from DB. Fetches inactive project from DB.
    */
   public Project getProject(final int id) {
-    final Project fetchedProject = this.cache.getProjectById(id);
+    Project fetchedProject = null;
+    try {
+      fetchedProject = this.cache.getProjectById(id).orElse(null);
+    } catch (final ProjectManagerException e) {
+      logger.info("Could not load from store project with id:", id);
+    }
     return fetchedProject;
   }
 

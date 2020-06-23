@@ -17,6 +17,7 @@
 package azkaban.project;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProjectCache {
 
@@ -33,7 +34,7 @@ public interface ProjectCache {
    * @param key name of the project
    * @return Project for it
    */
-  Project getProjectByName(final String key);
+  Optional<Project> getProjectByName(final String key);
 
   /**
    * Returns project corresponding to id if present in cache else queries DB to get it
@@ -41,7 +42,7 @@ public interface ProjectCache {
    * @param id Project id
    * @return Project
    */
-  Project getProjectById(final Integer id);
+  Optional<Project> getProjectById(final Integer id);
 
   /**
    * invalidates the project from the cache
