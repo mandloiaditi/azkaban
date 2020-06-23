@@ -135,7 +135,7 @@ public class InMemoryProjectCache extends AbstractProjectCache implements Projec
    * @return List of Projects matching to given pattern.
    */
   @Override
-  public List<Project> getProjectsWihSimilarNames(final Pattern pattern) {
+  public List<Project> getProjectsWithSimilarNames(final Pattern pattern) {
     final List<Project> matches = new ArrayList<>();
     final ArrayList<String> names = new ArrayList<>(this.projectsByName.getKeys());
     for (final String projName : names) {

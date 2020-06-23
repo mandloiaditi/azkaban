@@ -60,5 +60,5 @@ public interface ProjectCache {
   /**
    * Returns matching project names to given regex pattern.
    */
-  List<Project> getProjectsWihSimilarNames(Pattern pattern);
+  List<Project> getProjectsWithSimilarNames(Pattern pattern);
 }
