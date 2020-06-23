@@ -91,7 +91,7 @@ public class ProjectCacheGuavaTest {
   @Test
   public void testProjectCacheHit() {
     when(this.projectLoader.fetchProjectById(1)).thenReturn(new Project(1, "test1"));
-    final Project test1 = this.cacheGuava.getProjectById(1).orElseGet(null);
+    final Project test1 = this.cacheGuava.getProjectById(1).orElse(null);
     final Project test2 = this.cacheGuava.getProjectById(1).orElse(null);
     final CacheStats stats = this.cacheGuava.getCacheStats();
     assertEquals(test1.getName(), test2.getName());
