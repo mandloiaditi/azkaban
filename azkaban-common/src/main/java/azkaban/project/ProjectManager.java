@@ -156,7 +156,7 @@ public class ProjectManager {
       logger.error("Bad regex pattern {}", regexPattern);
       return Collections.emptyList();
     }
-    return this.cache.getProjectsWihSimilarNames(pattern);
+    return this.cache.getProjectsWithSimilarNames(pattern);
   }
 
 
