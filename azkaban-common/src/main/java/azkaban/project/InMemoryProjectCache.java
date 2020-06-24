@@ -112,11 +112,15 @@ public class InMemoryProjectCache extends AbstractProjectCache implements Projec
    * @return Project
    */
   @Override
-  public Optional<Project> getProjectById(final Integer key) throws ProjectManagerException {
+  public Optional<Project> getProjectById(final Integer key) {
     Project project = this.projectsById.get(key);
     if (project == null) {
       logger.error("Project not found in cache, fetching from DB");
-      project = fetchProjectById(key);
+      try {
+        project = fetchProjectById(key);
+      } catch (final ProjectManagerException e) {
+        logger.info("No active project exists for given id : ", key);
+      }
     }
     return Optional.ofNullable(project);
   }

@@ -1153,4 +1153,22 @@ public class JdbcProjectImpl implements ProjectLoader {
     return projects;
   }
 
+  @Override
+  public Project fetchActiveProjectById(final int id) throws ProjectManagerException {
+    Project project = null;
+    final ProjectResultHandler handler = new ProjectResultHandler();
+    final String query = ProjectResultHandler.SELECT_PROJECT_BY_ID + " and prj.active = true";
+    try {
+      final List<Project> projects = this.dbOperator
+          .query(query, handler, id);
+      if (projects.isEmpty()) {
+        throw new ProjectManagerException("No active project with id " + id + " exists in db.");
+      }
+      project = projects.get(0);
+    } catch (final SQLException ex) {
+      logger.error(ProjectResultHandler.SELECT_PROJECT_BY_ID + " failed.", ex);
+      throw new ProjectManagerException("Query for existing project failed. Project " + id, ex);
+    }
+    return project;
+  }
 }

@@ -95,7 +95,7 @@ public abstract class AbstractProjectCache implements ProjectCache {
    * Returns project object for given id using methods of the private projectLoader.
    */
   protected Project fetchProjectById(final Integer id) throws ProjectManagerException {
-    final Project result = this.projectLoader.fetchProjectById(id);
+    final Project result = this.projectLoader.fetchActiveProjectById(id);
     return result;
   }
 

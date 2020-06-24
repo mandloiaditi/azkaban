@@ -551,4 +551,12 @@ public class JdbcProjectImplTest {
       Assert.assertEquals(nameToId.get(name), id);
     }
   }
+
+  @Test
+  public void testFetchActiveProjectById() throws Exception {
+    createThreeProjects();
+    final Project project1 = this.loader.fetchProjectByName("mytestProject");
+    final Project project2 = this.loader.fetchActiveProjectById(project1.getId());
+    Assert.assertEquals(project2.isActive(), true);
+  }
 }

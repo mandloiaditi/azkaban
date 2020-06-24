@@ -49,8 +49,6 @@ public class ProjectCacheGuavaTest {
     this.cacheGuava = new ProjectCacheGuava(this.props, this.projectLoader, this.commonMetrics);
   }
 
-  // Common Metrics
-
   @Test
   public void testInitialization() {
     // Test with some recent project being loaded.
@@ -70,7 +68,7 @@ public class ProjectCacheGuavaTest {
     this.props.put(ConfigurationKeys.INIT_NUM_PROJECTS, 0);
     this.cacheGuava = new ProjectCacheGuava(this.props, this.projectLoader, this.commonMetrics);
     assertNull(this.cacheGuava.getProjectById(2).orElse(null));
-    when(this.projectLoader.fetchProjectById(2)).thenReturn(new Project(2, "myTest2"));
+    when(this.projectLoader.fetchActiveProjectById(2)).thenReturn(new Project(2, "myTest2"));
     assertNotNull(this.cacheGuava.getProjectById(2).orElse(null));
   }
 
@@ -106,7 +104,7 @@ public class ProjectCacheGuavaTest {
 
   @Test
   public void testProjectCacheHit() {
-    when(this.projectLoader.fetchProjectById(1)).thenReturn(new Project(1, "test1"));
+    when(this.projectLoader.fetchActiveProjectById(1)).thenReturn(new Project(1, "test1"));
     final Project test1 = this.cacheGuava.getProjectById(1).orElse(null);
     final Project test2 = this.cacheGuava.getProjectById(1).orElse(null);
     final CacheStats stats = this.cacheGuava.getCacheStats();

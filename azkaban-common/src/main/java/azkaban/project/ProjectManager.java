@@ -161,17 +161,11 @@ public class ProjectManager {
 
 
   /**
-   * Checks if a project is active using project_id. getProject(id) can also fetch he inactive
-   * projects from DB. Thus we need to make sure project retrieved is present in the mapping which
-   * consists of all the active projects. This map has key as project name in all the project cache
-   * implementations.
+   * Checks if a project is active using project_id.
    */
+
   public Boolean isActiveProject(final int id) {
-    Project project = getProject(id);
-    if (project == null) {
-      return false;
-    }
-    project = getProject(project.getName());
+    final Project project = this.cache.getProjectById(id).orElse(null);
     return project != null ? true : false;
   }
 
@@ -184,15 +178,19 @@ public class ProjectManager {
   }
 
   /**
-   * Fetch active/inactive project by project id. If active project not present in cache, fetches
-   * from DB. Fetches inactive project from DB.
+   * Fetch active/inactive project by project id. If active project not present in cache, cache
+   * fetches active projects from DB in the callback. If no active project exists for the id, given
+   * method fetches inactive project from DB.
    */
   public Project getProject(final int id) {
-    Project fetchedProject = null;
-    try {
-      fetchedProject = this.cache.getProjectById(id).orElse(null);
-    } catch (final ProjectManagerException e) {
-      logger.info("Could not load from store project with id:", id);
+    Project fetchedProject = this.cache.getProjectById(id).orElse(null);
+    if (fetchedProject == null) {
+      logger.info("No active project found, fetching the project from DB for id ", id);
+      try {
+        fetchedProject = this.projectLoader.fetchProjectById(id);
+      } catch (final ProjectManagerException e) {
+        logger.error("Could not load project from store.", e);
+      }
     }
     return fetchedProject;
   }

@@ -247,4 +247,9 @@ public interface ProjectLoader {
    * @throws ProjectManagerException
    */
   List<Project> fetchRecentProjects(int initialNumOfProjects) throws ProjectManagerException;
+
+  /**
+   * Fetch the given active project by given id.
+   */
+  public Project fetchActiveProjectById(final int id) throws ProjectManagerException;
 }
